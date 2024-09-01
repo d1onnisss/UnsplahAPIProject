@@ -9,7 +9,7 @@ import SnapKit
 
 class HomeViewController: UIViewController {
     
-    private var unsplashPhoto: [UnsplashPhoto] = []
+    private var unsplashPhotos: [UnsplashPhoto] = []
     
     private lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
@@ -38,16 +38,15 @@ class HomeViewController: UIViewController {
         NetworkManager.shared.authentication()
         verticalCV.refreshControl = refreshControl
     }
-        
+    
     @objc private func refreshData(sender: UIRefreshControl) {
         getData()
-        sender.endRefreshing()
     }
-        
+    
     func getData() {
         NetworkManager.shared.fetchPhotos { photos in
-            DispatchQueue.main.async { 
-                self.unsplashPhoto = photos
+            DispatchQueue.main.async {
+                self.unsplashPhotos = photos
                 self.verticalCV.reloadData()
                 self.refreshControl.endRefreshing()
             }
@@ -64,12 +63,12 @@ class HomeViewController: UIViewController {
 
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return unsplashPhoto.count
+        return unsplashPhotos.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.reuseIdentifier, for: indexPath) as! PhotoCollectionViewCell
-        let photo = unsplashPhoto[indexPath.item]
+        let photo = unsplashPhotos[indexPath.item]
         cell.configure(with: photo)
         return cell
     }

@@ -15,29 +15,46 @@ class NetworkManager {
     
     private init() {}
     
-    func fetchPhotos(completion: @escaping([UnsplashPhoto]) -> Void) {
-        guard let url = URL(string: Constants.URLS.baseURL) else {return}
+    func fetchPhotos(completion: @escaping ([UnsplashPhoto]) -> Void) {
+        guard let url = URL(string: Constants.URLS.baseURL) else {
+            print("Invalid URL")
+            return
+        }
         
         var request = URLRequest(url: url)
         request.setValue("Client-ID \(Constants.Keys.accessKey)", forHTTPHeaderField: "Authorization")
         
-        URLSession.shared.dataTask(with: request) { data, _, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             
             if let error = error {
-                print(error)
+                print("Fetch photos error: \(error.localizedDescription)")
+                return
             }
             
-            guard let data = data else {return}
+            if let httpResponse = response as? HTTPURLResponse {
+                print("HTTP Status Code: \(httpResponse.statusCode)")
+                
+                if !(200...299).contains(httpResponse.statusCode) {
+                    print("Request failed with status code \(httpResponse.statusCode)")
+                    return
+                }
+            }
+            
+            guard let data = data else {
+                print("No data received")
+                return
+            }
             
             do {
                 let parsedData = try JSONDecoder().decode([UnsplashPhoto].self, from: data)
                 print("Fetched \(parsedData.count) photos")
                 completion(parsedData)
             } catch {
-                print(error.localizedDescription)
+                print("Decoding error: \(error.localizedDescription)")
             }
         }.resume()
     }
+    
     
     func authentication() {
         guard let url = URL(string: Constants.URLS.authenticate) else {return}
@@ -52,7 +69,7 @@ class NetworkManager {
             "client_id": Constants.Keys.accessKey,
             "client_secret": Constants.Keys.secretKey,
             "redirect_uri": "urn:ietf:wg:oauth:2.0:oob",
-            "code": "YLy9rjiO2gqXtSfP8uwfDQd3o_jaarSX-JYuZW-gBLk",
+            "code": "SZCzA90lSAJ4L-H8zx7tD9ICDxSLwedggh1bs9qp_kg",
             "grant_type": "authorization_code"
         ]
         

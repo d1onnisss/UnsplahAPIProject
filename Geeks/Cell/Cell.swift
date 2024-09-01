@@ -23,8 +23,8 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     
     private let likeButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "heart"), for: .normal) // Outlined heart
-        button.setImage(UIImage(systemName: "heart.fill"), for: .selected) // Filled heart
+        button.setImage(UIImage(systemName: "heart"), for: .normal)
+        button.setImage(UIImage(systemName: "heart.fill"), for: .selected) 
         button.tintColor = .red
         button.contentMode = .center
         button.addTarget(self, action: #selector(didTapLike), for: .touchUpInside)
